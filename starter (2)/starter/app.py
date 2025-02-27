@@ -46,7 +46,7 @@ def index():
     filter_ranges = {
         "temp": [min_temp,max_temp],
         "humidity" : [min_hum, max_hum],
-        "wind": [min_wind,max_wind] # joy mark
+        "wind": [min_wind,max_wind] 
     } 
 
     return render_template(
