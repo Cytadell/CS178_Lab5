@@ -44,6 +44,9 @@ function draw_axis(plot_name, axis, svg, height, domain, range, discrete){
 function draw_axes(plot_name, svg, width, height, domainx, domainy, x_discrete){
     var x_scale = draw_axis(plot_name, 'x', svg, height, domainx, [0, width], x_discrete)
     var y_scale = draw_axis(plot_name, 'y', svg, height, domainy, [height, 0], false)
+    
+    //print x_scale, y_scale
+
     return {'x': x_scale, 'y': y_scale}
 }
 
@@ -63,12 +66,29 @@ function draw_slider(column, min, max, scatter_svg, bar_svg, scatter_scale, bar_
 
 // TODO: Write a function that draws the scatterplot
 function draw_scatter(data, svg, scale) {
-    console.log(data);
-    // d3.select("#scatter")
-    //     .append("svg")
-        
-    
-    // let dots = svg
+    // console.log(data);
+
+    //scatter_ranges = [min_x,max_x,min_y,max_y]
+
+    xScale_scatter = scale['x']
+    yScale_scatter = scale['y']
+
+    // TODO: Add dots to the scatterplot
+    let dots = svg
+        .append("g")
+        .selectAll(".dot")
+        .data(data)
+        .join("circle")
+        .attr("class", "dot")
+        // TODO: Fix these, find position of dots using appropriate scale
+        .attr("cx", (d) => xScale_scatter(d["X"]))
+        .attr("cy", (d) => yScale_scatter(d["Y"]))
+        .attr("r", 3)      
+        .attr("stroke", "Black")
+        .attr("stroke-width", 1)
+        .attr("fill", "red")
+        //TODO: color points by iris variety using a categorical color map
+        // .style("fill", (d) => color(d["variety"]) ); // color
     
 }
 
@@ -77,12 +97,34 @@ function draw_bar(data, svg, scale){
 
 }
 
+// Function to update the selectedDays array
+function updateSelectedDays() {
+    var day = []
+
+    var checkedBoxes = d3.selectAll('input[type="checkbox"]:checked');
+
+    checkedBoxes.each(function() {        
+        // console.log(this.value);
+        day.push(this.value);
+    });
+
+    console.log("Selected Days:", day);
+    return day;
+}
+
+
 // TODO: Write a function that extracts the selected days and minimum/maximum values for each slider
 function get_params(){
+    
     var day = []
     var humidity = [0, 0]
     var temp = [0, 0]
     var wind = [0, 0]
+
+    day = updateSelectedDays();
+    d3.selectAll(".checkboxDays")
+        .on("change", updateSelectedDays);
+    
     return {'day': day, 'humidity': humidity, 'temp': temp, 'wind': wind}
 }
 
