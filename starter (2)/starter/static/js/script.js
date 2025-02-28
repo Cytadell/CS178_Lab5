@@ -51,7 +51,9 @@ function draw_axes(plot_name, svg, width, height, domainx, domainy, x_discrete){
 }
 
 function draw_slider(column, min, max, scatter_svg, bar_svg, scatter_scale, bar_scale){
+    
     slider = document.getElementById(column+'-slider')
+    
     noUiSlider.create(slider, {
       start: [min, max],
       connect: false,
@@ -59,6 +61,7 @@ function draw_slider(column, min, max, scatter_svg, bar_svg, scatter_scale, bar_
       step: 1,
       range: {'min': min, 'max': max}
     });
+    
     slider.noUiSlider.on('change', function(){
         update(scatter_svg, bar_svg, scatter_scale, bar_scale)
     });
@@ -69,26 +72,22 @@ function draw_scatter(data, svg, scale) {
     // console.log(data);
 
     //scatter_ranges = [min_x,max_x,min_y,max_y]
-
     xScale_scatter = scale['x']
     yScale_scatter = scale['y']
 
-    // TODO: Add dots to the scatterplot
+    // Add dots to the scatterplot
     let dots = svg
         .append("g")
         .selectAll(".dot")
         .data(data)
         .join("circle")
         .attr("class", "dot")
-        // TODO: Fix these, find position of dots using appropriate scale
         .attr("cx", (d) => xScale_scatter(d["X"]))
         .attr("cy", (d) => yScale_scatter(d["Y"]))
         .attr("r", 3)      
         .attr("stroke", "Black")
         .attr("stroke-width", 1)
         .attr("fill", "red")
-        //TODO: color points by iris variety using a categorical color map
-        // .style("fill", (d) => color(d["variety"]) ); // color
     
 }
 
@@ -108,7 +107,7 @@ function updateSelectedDays() {
         day.push(this.value);
     });
 
-    console.log("Selected Days:", day);
+    // console.log("Selected Days:", day);
     return day;
 }
 
@@ -121,15 +120,32 @@ function get_params(){
     var temp = [0, 0]
     var wind = [0, 0]
 
+    // extract and update the selected days
     day = updateSelectedDays();
     d3.selectAll(".checkboxDays")
         .on("change", updateSelectedDays);
-    
+
+    // extract and update the minimum and maximum values for each slider
+    const hum_slider = document.getElementById('humidity-slider').noUiSlider;
+    humidity = [hum_slider.get()[0], hum_slider.get()[1]];
+
+    const temp_slider = document.getElementById('temp-slider').noUiSlider;
+    temp = [temp_slider.get()[0], temp_slider.get()[1]];
+
+    const wind_slider = document.getElementById('wind-slider').noUiSlider;
+    wind = [wind_slider.get()[0], wind_slider.get()[1]];
+
+    // console.log("Humidity:", humidity);
+    // console.log("Temp:", temp);
+    // console.log("Wind:", wind);
+
     return {'day': day, 'humidity': humidity, 'temp': temp, 'wind': wind}
 }
 
 // TODO: Write a function that removes the old data points and redraws the scatterplot
 function update_scatter(data, svg, scale){
+    // removes the old data points
+    svg.selectAll(".dot").remove();
     draw_scatter(data, svg, scale)
 }
 

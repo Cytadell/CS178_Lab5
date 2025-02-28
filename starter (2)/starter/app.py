@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import duckdb
 
 app = Flask(__name__)
-continuous_columns = ['humidity', 'temp', 'wind']
+continuous_columns = {'humidity', 'temp', 'wind'}
 discrete_columns = ['day']
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
@@ -58,16 +58,31 @@ def index():
 @app.route('/update', methods=["POST"]) 
 def update():
     request_data = request.get_json()
-    continuous_predicate = ' AND '.join([f'({column} >= 0 AND {column} <= 0)' for column in continuous_columns]) # TODO: update where clause from sliders
-    # TODO: update where clause from checkboxes
-    discrete_predicate = ' AND '.join([f'{column} IN ()' for column in discrete_columns]) 
-    predicate = ' AND '.join([continuous_predicate, discrete_predicate]) # Combine where clause from sliders and checkboxes
+    
+    # update where clause from checkboxes
+    discrete_columns = request_data['day']
+    # discrete_predicate = ' AND '.join([f'day IN (\'{column}\')' for column in discrete_columns]) 
+    discrete_predicate = f"day IN ({', '.join(f"'{column}'" for column in discrete_columns)})"
+   
+    # update where clause from sliders
+    # store the min and max in the continuous columns in a dictionary
+    request_data['humidity']
+    continuous_columns = {
+        "humidity": [request_data['humidity'][0], request_data['humidity'][1]],
+        "temp": [request_data['temp'][0], request_data['temp'][1]],
+        "wind": [request_data['wind'][0], request_data['wind'][1]]
+    }
+    print(continuous_columns)
+    
+    continuous_predicate = ' AND '.join([f'({column} >= {continuous_columns[column][0]} AND {column} <= {continuous_columns[column][1]})' for column in continuous_columns])
+    # continuous_predicate = ' AND '.join([f'({column} >= 0 AND {column} <= 0)' for column in continuous_columns]) 
+    
+    # Combine where clause from sliders and checkboxes
+    predicate = ' AND '.join([continuous_predicate, discrete_predicate]) 
 
-    # scatter_query = f'SELECT X, Y FROM forestfires.csv WHERE {predicate}'
-    scatter_query = f'SELECT X, Y FROM forestfires.csv'
+    scatter_query = f'SELECT X, Y FROM forestfires.csv WHERE {predicate}'
+    # scatter_query = f'SELECT X, Y FROM forestfires.csv'
     scatter_results = duckdb.sql(scatter_query).df()
-    # print(scatter_results)
-    print(type(scatter_results))
     # scatter_data = [] # TODO: Extract the data that will populate the scatter plot
     scatter_data = scatter_results.to_dict(orient='records')
     # print(scatter_data)
