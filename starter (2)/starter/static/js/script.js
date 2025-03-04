@@ -91,10 +91,28 @@ function draw_scatter(data, svg, scale) {
     
 }
 
-// TODO: write a function that updates the bar
-function draw_bar(data, svg, scale){
+function draw_bar(data, svg, scale) {
+    console.log("Here?");
 
+    // Extract scales
+    let xScale_bar = scale['x'];
+    let yScale_bar = scale['y'];
+
+    // Draw bars
+    svg.selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale_bar(d["month"]))
+        .attr("y", d => yScale_bar(d["count(X)"]))
+        .attr("width", xScale_bar.bandwidth())
+        .attr("height", d => height - yScale_bar(d["count(X)"]))
+        .attr("fill", "steelblue") 
+        .attr("stroke", "black")
+        .attr("stroke-width", 1);
 }
+
 
 // Function to update the selectedDays array
 function updateSelectedDays() {
@@ -112,7 +130,7 @@ function updateSelectedDays() {
 }
 
 
-// TODO: Write a function that extracts the selected days and minimum/maximum values for each slider
+// COMPLETED: Write a function that extracts the selected days and minimum/maximum values for each slider
 function get_params(){
     
     var day = []
@@ -135,9 +153,9 @@ function get_params(){
     const wind_slider = document.getElementById('wind-slider').noUiSlider;
     wind = [wind_slider.get()[0], wind_slider.get()[1]];
 
-    // console.log("Humidity:", humidity);
-    // console.log("Temp:", temp);
-    // console.log("Wind:", wind);
+    console.log("Humidity:", humidity);
+    console.log("Temp:", temp);
+    console.log("Wind:", wind);
 
     return {'day': day, 'humidity': humidity, 'temp': temp, 'wind': wind}
 }
@@ -149,9 +167,9 @@ function update_scatter(data, svg, scale){
     draw_scatter(data, svg, scale)
 }
 
-// TODO: Write a function that updates the y-axis, removes the old bars, and redraws the bars
+// COMPLETED: Write a function that updates the y-axis, removes the old bars, and redraws the bars
 function update_bar(data, max_count, svg, scale){
-
+    svg.selectAll(".bar").remove();
     draw_bar(data, svg, scale)
 }
 
