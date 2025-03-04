@@ -72,8 +72,7 @@ def update():
         "temp": [request_data['temp'][0], request_data['temp'][1]],
         "wind": [request_data['wind'][0], request_data['wind'][1]]
     }
-    print(continuous_columns)
-    
+
     continuous_predicate = ' AND '.join([f'({column} >= {continuous_columns[column][0]} AND {column} <= {continuous_columns[column][1]})' for column in continuous_columns])
     # continuous_predicate = ' AND '.join([f'({column} >= 0 AND {column} <= 0)' for column in continuous_columns]) 
     
@@ -90,8 +89,11 @@ def update():
     # print(scatter_data)
     print(type(scatter_data))
 
-    bar_query = f'SELECT month,COUNT(X) FROM forestfires.csv GROUP BY month ORDER BY month'
+    bar_query = f'SELECT month,COUNT(X) FROM forestfires.csv WHERE {predicate} GROUP BY month ORDER BY month'
     bar_results = duckdb.sql(bar_query).df()
+
+    print(bar_results)
+    
     bar_results['month'] = bar_results.index.map({i: sorted_months[i] for i in range(len(sorted_months))})
     bar_data = bar_results.to_dict(orient='records')
     max_count = int(bar_results["count(X)"].max())
