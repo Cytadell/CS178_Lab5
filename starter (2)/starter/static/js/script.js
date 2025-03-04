@@ -92,7 +92,6 @@ function draw_scatter(data, svg, scale) {
 }
 
 function draw_bar(data, svg, scale) {
-    console.log("Here?");
 
     // Extract scales
     let xScale_bar = scale['x'];
@@ -153,9 +152,9 @@ function get_params(){
     const wind_slider = document.getElementById('wind-slider').noUiSlider;
     wind = [wind_slider.get()[0], wind_slider.get()[1]];
 
-    console.log("Humidity:", humidity);
-    console.log("Temp:", temp);
-    console.log("Wind:", wind);
+    //console.log("Humidity:", humidity);
+    //console.log("Temp:", temp);
+    //console.log("Wind:", wind);
 
     return {'day': day, 'humidity': humidity, 'temp': temp, 'wind': wind}
 }

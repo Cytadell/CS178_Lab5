@@ -58,11 +58,11 @@ def index():
 @app.route('/update', methods=["POST"]) 
 def update():
     request_data = request.get_json()
-    
+        
     # update where clause from checkboxes
     discrete_columns = request_data['day']
     discrete_predicate = ' AND '.join([f'day IN (\'{column}\')' for column in discrete_columns]) 
-    #discrete_predicate = f"day IN ({', '.join(f"'{column}'" for column in discrete_columns)})"
+    # discrete_predicate = f"day IN ({', '.join(f"'{column}'" for column in discrete_columns)})" FROM GAVIN: I changed this line to above
    
     # update where clause from sliders
     # store the min and max in the continuous columns in a dictionary
@@ -90,12 +90,9 @@ def update():
 
     bar_query = f'SELECT month,COUNT(X) FROM forestfires.csv GROUP BY month ORDER BY month'
     bar_results = duckdb.sql(bar_query).df()
-    print(bar_results)
     bar_results['month'] = bar_results.index.map({i: sorted_months[i] for i in range(len(sorted_months))})
-    print(bar_results)
     bar_data = bar_results.to_dict(orient='records')
     max_count = int(bar_results["count(X)"].max())
-    print(max_count)
 
     return {'scatter_data': scatter_data, 'bar_data': bar_data, 'max_count': max_count}
 
