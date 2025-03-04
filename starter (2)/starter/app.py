@@ -61,7 +61,7 @@ def update():
         
     # update where clause from checkboxes
     discrete_columns = request_data['day']
-    discrete_predicate = ' AND '.join([f'day IN (\'{column}\')' for column in discrete_columns]) 
+    discrete_predicate = ' OR '.join([f'day IN (\'{column}\')' for column in discrete_columns]) 
     # discrete_predicate = f"day IN ({', '.join(f"'{column}'" for column in discrete_columns)})" FROM GAVIN: I changed this line to above
    
     # update where clause from sliders
@@ -78,7 +78,9 @@ def update():
     # continuous_predicate = ' AND '.join([f'({column} >= 0 AND {column} <= 0)' for column in continuous_columns]) 
     
     # Combine where clause from sliders and checkboxes
-    predicate = ' AND '.join([continuous_predicate, discrete_predicate]) 
+    predicate = ' AND '.join([continuous_predicate, '(' + discrete_predicate + ')']) 
+
+    print(predicate)
 
     scatter_query = f'SELECT X, Y FROM forestfires.csv WHERE {predicate}'
     # scatter_query = f'SELECT X, Y FROM forestfires.csv'
